@@ -12,12 +12,16 @@
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <h2>Meals</h2>
+<a href="meals?action=create">Добавить приём пищи</a>
+<br><br>
 <table border="1" cellpadding="8" cellspacing="0">
     <thead>
     <tr>
         <th>Дата/Время</th>
         <th>Описание</th>
         <th>Калории</th>
+        <th></th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
@@ -26,6 +30,8 @@
             <td>${meal.getDate()} ${meal.getTime()}</td>
             <td>${meal.getDescription()}</td>
             <td>${meal.getCalories()}</td>
+            <td><a href="meals?action=update&id=${meal.id}">Изменить</a> </td>
+            <td><a href="meals?action=delete&id=${meal.id}">Удалить</a></td>
         </tr>
     </c:forEach>
     </tbody>
