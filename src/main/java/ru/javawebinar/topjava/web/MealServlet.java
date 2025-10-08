@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -34,13 +36,18 @@ public class MealServlet extends HttpServlet {
     }
 
     private void initTestData() {
-        mealRepository.save(new Meal(LocalDateTime.of(2020, 1, 30, 10, 0), "Завтрак", 500));
-        mealRepository.save(new Meal(LocalDateTime.of(2020, 1, 30, 13, 0), "Обед", 1000));
-        mealRepository.save(new Meal(LocalDateTime.of(2020, 1, 30, 20, 0), "Ужин", 500));
-        mealRepository.save(new Meal(LocalDateTime.of(2020, 1, 31, 0, 0), "Еда на граничное значение", 100));
-        mealRepository.save(new Meal(LocalDateTime.of(2020, 1, 31, 10, 0), "Завтрак", 1000));
-        mealRepository.save(new Meal(LocalDateTime.of(2020, 1, 31, 13, 0), "Обед", 500));
-        mealRepository.save(new Meal(LocalDateTime.of(2020, 1, 31, 20, 0), "Ужин", 410));
+        List<Meal> meals = Arrays.asList(
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
+        );
+        for (Meal meal : meals) {
+            mealRepository.save(meal);
+        }
     }
 
     @Override

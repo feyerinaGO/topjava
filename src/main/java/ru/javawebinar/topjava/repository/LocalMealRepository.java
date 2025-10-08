@@ -16,12 +16,10 @@ public class LocalMealRepository implements MealRepository {
     public Meal save(Meal meal) {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
+            repository.put(meal.getId(), meal);
+            return meal;
         }
-        else if (!repository.containsKey(meal.getId())) {
-            return null;
-        }
-        repository.put(meal.getId(), meal);
-        return meal;
+        return repository.replace(meal.getId(), meal) != null ? meal : null;
     }
 
     @Override
