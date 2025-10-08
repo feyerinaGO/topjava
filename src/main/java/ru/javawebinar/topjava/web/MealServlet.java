@@ -5,7 +5,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.repository.LocalMealRepository;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.util.MealUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.ServletException;
@@ -31,7 +30,6 @@ public class MealServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         mealRepository = new LocalMealRepository();
-        // Инициализация тестовыми данными
         initTestData();
     }
 
@@ -60,7 +58,6 @@ public class MealServlet extends HttpServlet {
                     new Meal(LocalDateTime.now(), "", 0) :
                     mealRepository.get(Integer.parseInt(request.getParameter("id")));
             request.setAttribute("meal", meal);
-            request.setAttribute("isNew", MealUtil.isNew(meal));
             request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
             return;
         } 
@@ -82,7 +79,7 @@ public class MealServlet extends HttpServlet {
         int calories = Integer.parseInt(request.getParameter("calories"));
 
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id), dateTime, description, calories);
-        log.info(MealUtil.isNew(meal)? "Create {}" : "Update {}", meal);
+        log.info(meal.isNew()? "Create {}" : "Update {}", meal);
         mealRepository.save(meal);
         response.sendRedirect("meals");
     }

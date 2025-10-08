@@ -17,6 +17,9 @@ public class LocalMealRepository implements MealRepository {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
         }
+        else if (!repository.containsKey(meal.getId())) {
+            return null;
+        }
         repository.put(meal.getId(), meal);
         return meal;
     }
