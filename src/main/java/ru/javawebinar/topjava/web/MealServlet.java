@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.util.StringUtils;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
@@ -12,8 +14,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
@@ -73,6 +78,16 @@ public class MealServlet extends HttpServlet {
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
+            case "filter":
+                LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
+                LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
+                LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
+                LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
+
+                List<MealTo> meals = mealController.getBetween(startDate, startTime, endDate, endTime);
+                request.setAttribute("meals", meals);
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
             case "all":
             default:
                 log.info("getAll");
@@ -85,5 +100,13 @@ public class MealServlet extends HttpServlet {
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
+    }
+
+    private LocalDate parseLocalDate(String str) {
+        return StringUtils.hasText(str) ? LocalDate.parse(str) : null;
+    }
+
+    private LocalTime parseLocalTime(String str) {
+        return StringUtils.hasText(str) ? LocalTime.parse(str) : null;
     }
 }

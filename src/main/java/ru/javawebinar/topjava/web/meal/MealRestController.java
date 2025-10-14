@@ -7,8 +7,11 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
@@ -55,6 +58,17 @@ public class MealRestController {
         log.info("update {} with id={} for user {}", meal, id, userId);
         assureIdConsistent(meal, id);
         service.update(meal, userId);
+    }
+
+    public List<MealTo> getBetween(LocalDate startDate, LocalTime startTime,
+                                   LocalDate endDate, LocalTime endTime) {
+        int userId = SecurityUtil.authUserId();
+        log.info("getBetween dates {} - {} and time {} - {} for user {}",
+                startDate, endDate, startTime, endTime, userId);
+
+        List<Meal> mealsDateFiltered = service.getAll(userId);
+        return MealsUtil.getFilteredByDateTos(mealsDateFiltered,
+                SecurityUtil.authUserCaloriesPerDay(), startDate, endDate, startTime, endTime);
     }
 
 }

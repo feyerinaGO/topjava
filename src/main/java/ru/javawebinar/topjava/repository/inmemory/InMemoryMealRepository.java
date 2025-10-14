@@ -5,6 +5,8 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -22,8 +24,14 @@ public class InMemoryMealRepository implements MealRepository {
                 meal.getDateTime(),
                 meal.getDescription(),
                 meal.getCalories(),
-                1 // userId for demo
+                1 // userId for demo (user)
         ), 1));
+        MealsUtil.mealsAdmin.forEach(meal -> save(new Meal(
+                meal.getDateTime(),
+                meal.getDescription(),
+                meal.getCalories(),
+                2 // userId for demo (admin)
+        ), 2));
     }
 
     @Override
