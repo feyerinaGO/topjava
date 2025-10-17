@@ -66,9 +66,8 @@ public class MealRestController {
         log.info("getBetween dates {} - {} and time {} - {} for user {}",
                 startDate, endDate, startTime, endTime, userId);
 
-        List<Meal> mealsDateFiltered = service.getAll(userId);
-        return MealsUtil.getFilteredByDateTos(mealsDateFiltered,
-                SecurityUtil.authUserCaloriesPerDay(), startDate, endDate, startTime, endTime);
+        return service.getBetween(userId, SecurityUtil.authUserCaloriesPerDay(),
+                startDate, startTime, endDate, endTime);
     }
 
 }

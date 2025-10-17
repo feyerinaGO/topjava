@@ -23,6 +23,8 @@ public class UserServlet extends HttpServlet {
                 int userId = Integer.parseInt(userIdParam);
                 SecurityUtil.setAuthUserId(userId);
                 log.info("Set auth user id: {}", userId);
+                response.sendRedirect("meals");
+                return;
             } catch (NumberFormatException e) {
                 log.warn("Invalid user id parameter: {}", userIdParam);
             }

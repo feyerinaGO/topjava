@@ -46,8 +46,9 @@ public class InMemoryUserRepository implements UserRepository {
 
     @Override
     public User getByEmail(String email) {
+        String lowercaseEmail = email.toLowerCase();
         return usersMap.values().stream()
-                .filter(user -> email.equals(user.getEmail()))
+                .filter(user -> lowercaseEmail.equals(user.getEmail().toLowerCase()))
                 .findFirst()
                 .orElse(null);
     }
@@ -55,7 +56,7 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         return usersMap.values().stream()
-                .sorted(Comparator.comparing(User::getName))
+                .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
                 .collect(Collectors.toList());
     }
 }

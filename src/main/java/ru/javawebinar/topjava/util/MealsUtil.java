@@ -66,4 +66,19 @@ public class MealsUtil {
     private static MealTo createTo(Meal meal, boolean excess) {
         return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
+
+    public static boolean isBetweenInclusive(LocalDateTime dateTime,
+                                             LocalDate startDate, LocalTime startTime,
+                                             LocalDate endDate, LocalTime endTime) {
+        if (startDate != null && dateTime.toLocalDate().isBefore(startDate)) {
+            return false;
+        }
+        if (endDate != null && dateTime.toLocalDate().isAfter(endDate)) {
+            return false;
+        }
+        if (startTime != null && dateTime.toLocalTime().isBefore(startTime)) {
+            return false;
+        }
+        return endTime == null || !dateTime.toLocalTime().isAfter(endTime);
+    }
 }
