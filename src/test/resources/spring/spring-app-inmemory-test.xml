@@ -5,6 +5,9 @@
        http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:component-scan base-package="ru.javawebinar.**.repository.inmemory"/>
+
     <context:component-scan base-package="ru.javawebinar.**.service"/>
+
     <context:component-scan base-package="ru.javawebinar.**.web"/>
+
 </beans>
