@@ -14,6 +14,7 @@ import ru.javawebinar.topjava.ActiveDbProfileResolver;
 import ru.javawebinar.topjava.TimingRules;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.Assert.fail;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
@@ -31,9 +32,30 @@ public abstract class AbstractServiceTest {
     public Stopwatch stopwatch = TimingRules.STOPWATCH;
 
     //  Check root cause with AssertJ: https://github.com/junit-team/junit-framework/issues/2129#issuecomment-565712630
+//    protected <T extends Throwable> void validateRootCause(Class<T> rootExceptionClass, Runnable runnable) {
+//        assertThatExceptionOfType(Throwable.class)
+//                .isThrownBy(runnable::run)
+//                .withRootCauseInstanceOf(rootExceptionClass);
+//    }
+
     protected <T extends Throwable> void validateRootCause(Class<T> rootExceptionClass, Runnable runnable) {
-        assertThatExceptionOfType(Throwable.class)
-                .isThrownBy(runnable::run)
-                .withRootCauseInstanceOf(rootExceptionClass);
+        try {
+            runnable.run();
+            fail("Expected exception with root cause of type: " + rootExceptionClass.getName());
+        } catch (Exception e) {
+            Throwable rootCause = e;
+            while (rootCause.getCause() != null && rootCause.getCause() != rootCause) {
+                rootCause = rootCause.getCause();
+            }
+            if (rootExceptionClass.isInstance(e)) {
+                return;
+            }
+            if (rootExceptionClass.isInstance(rootCause)) {
+                return;
+            }
+            throw new AssertionError("Expected root cause: " + rootExceptionClass.getName() +
+                    ", but got: " + (rootCause != e ? rootCause.getClass().getName() + " with cause " : "") +
+                    e.getClass().getName(), e);
+        }
     }
 }

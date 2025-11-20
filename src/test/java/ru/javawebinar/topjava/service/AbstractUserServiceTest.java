@@ -27,13 +27,31 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Autowired
     private CacheManager cacheManager;
 
-    @Autowired
+    @Autowired(required = false)
     protected JpaUtil jpaUtil;
+
+//    @Autowired
+//    private static Environment environment;
+
+//    @BeforeClass
+//    public static void checkProfile() throws Exception {
+//        Assume.assumeTrue(isJdbcProfile());
+//    }
+//
+//    private static boolean isJdbcProfile() {
+//        try {
+//            return Arrays.asList(environment.getActiveProfiles()).contains(Profiles.JDBC);
+//        } catch (NullPointerException exception) {
+//            return false;
+//        }
+//    }
 
     @Before
     public void setup() {
         cacheManager.getCache("users").clear();
-        jpaUtil.clear2ndLevelHibernateCache();
+        if (jpaUtil != null) {
+            jpaUtil.clear2ndLevelHibernateCache();
+        }
     }
 
     @Test
@@ -100,5 +118,40 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.USER)));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "password", 9, true, new Date(), Set.of())));
         validateRootCause(ConstraintViolationException.class, () -> service.create(new User(null, "User", "mail@yandex.ru", "password", 10001, true, new Date(), Set.of())));
+    }
+
+    @Test
+    public void getWithRoles() {
+        User adminUser = service.get(ADMIN_ID);
+        USER_MATCHER.assertMatch(adminUser, admin);
+        org.junit.Assert.assertTrue("Admin should have ADMIN role", adminUser.getRoles().contains(Role.ADMIN));
+        org.junit.Assert.assertTrue("Admin should have USER role", adminUser.getRoles().contains(Role.USER));
+    }
+
+    @Test
+    public void createWithMultipleRoles() {
+        User newUser = getNew();
+        newUser.setRoles(Set.of(Role.USER, Role.ADMIN));
+        User created = service.create(newUser);
+        User loaded = service.get(created.id());
+        USER_MATCHER.assertMatch(loaded, newUser);
+        org.junit.Assert.assertTrue("Should have USER role", loaded.getRoles().contains(Role.USER));
+        org.junit.Assert.assertTrue("Should have ADMIN role", loaded.getRoles().contains(Role.ADMIN));
+    }
+
+    @Test
+    public void updateWithRoles() {
+        User updated = new User(user);
+        updated.setEmail("update@gmail.com");
+        updated.setName("UpdatedName");
+        updated.setCaloriesPerDay(330);
+        updated.setPassword("newPass");
+        updated.setEnabled(false);
+        updated.setRoles(Set.of(Role.ADMIN));
+        service.update(updated);
+        User loaded = service.get(USER_ID);
+        USER_MATCHER.assertMatch(loaded, updated);
+        org.junit.Assert.assertTrue("Should have ADMIN role", loaded.getRoles().contains(Role.ADMIN));
+        org.junit.Assert.assertEquals("Should have exactly 1 role", 1, loaded.getRoles().size());
     }
 }
