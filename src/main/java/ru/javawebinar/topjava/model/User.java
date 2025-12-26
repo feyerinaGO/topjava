@@ -1,12 +1,14 @@
 package ru.javawebinar.topjava.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.util.CollectionUtils;
 import ru.javawebinar.topjava.HasIdAndEmail;
+import ru.javawebinar.topjava.View;
+import ru.javawebinar.topjava.util.validation.NoHtml;
 
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
@@ -40,6 +42,7 @@ public class User extends AbstractNamedEntity implements HasIdAndEmail {
     @Email
     @NotBlank
     @Size(max = 128)
+    @NoHtml(groups = {View.Web.class})  // https://stackoverflow.com/questions/17480809
     private String email;
 
     @Column(name = "password", nullable = false)
@@ -76,7 +79,7 @@ public class User extends AbstractNamedEntity implements HasIdAndEmail {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")//, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @OrderBy("dateTime DESC")
     @OnDelete(action = OnDeleteAction.CASCADE) //https://stackoverflow.com/a/44988100/548473
-    @JsonManagedReference
+    @ApiModelProperty(hidden = true)
     private List<Meal> meals;
 
     public User() {
